@@ -19,6 +19,7 @@ check_import() {
 unused_imports() {
   local f="$1"
   echo "$f"
+  # TODO(timgreen): support import java.util.{ List => JList, Date }
   imports=$(grep "^\s*import [a-zA-Z.]\+\s*$" "$f" | grep -v "scala.language.")
   for import in ${imports[@]}; do
     check_import "$import" "$f"
