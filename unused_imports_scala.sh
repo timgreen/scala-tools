@@ -1,11 +1,18 @@
 #!/bin/bash
 
+remove_import() {
+  local import="$1"
+  local f="$2"
+  sed -i "/^$import$/d" "$f"
+}
+
 check_import() {
   local import="$1"
   local c=$(echo $import | sed "s/^.*\.\([a-zA-Z]\+\)\s*$/\\1/")
   local f="$2"
   grep -v "^\s*import [a-zA-Z.]\+\s*$" "$f" | grep "\b$c\b" &> /dev/null || {
     echo " - $import"
+    remove_import "$import" "$f"
   }
 }
 
