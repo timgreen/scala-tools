@@ -28,17 +28,22 @@ print_imports_range() {
   ' $1
 }
 
-sort_import_block() {
+do_sort_imports_block() {
   f=$1
   while read range; do
-    IFS=: read b e <<< $range
+    IFS=': ' read b e <<< $range
     c=$(($e - $b + 1))
 
-    i=$b
-    tail -n +$b $f | head -n $c | LC_ALL=C sort | while read line; do
-      sed -i "$i c$line" $f
-      i=$(($i + 1))
-    done
+    orignal_block=$(tail -n +$b $f | head -n $c)
+    sorted_block=$(echo "$orignal_block" | LC_ALL=C sort)
+
+    if [[ "$orignal_block" != "$sorted_block" ]]; then
+      i=$b
+      echo "$sorted_block" | while read line; do
+        sed -i "$i c$line" $f
+        i=$(($i + 1))
+      done
+    fi
   done
 }
 
@@ -46,7 +51,7 @@ sort_imports() {
   f=$1
   echo "processing $f" 1>&2
   print_imports_range $f \
-    | sort_import_block $f
+    | do_sort_imports_block $f
 }
 
 main() {
